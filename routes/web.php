@@ -6,9 +6,13 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FornecedorController;
+use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\PedidoProdutoController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ProdutoDetalheController;
+use App\Models\Cliente;
 use App\Models\Fornecedor;
+use App\Models\Pedido;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,27 +37,26 @@ Route::get('/contatos', function () {
     return 'Está é a página com os nossos contatos.';
 });*/
 
-Route::get('/',[\App\Http\Controllers\PrincipalController::class,'principal'])->name('site.principal');
+Route::get('/', [\App\Http\Controllers\PrincipalController::class, 'principal'])->name('site.principal');
 
-Route::get('/sobre-nos',[\App\Http\Controllers\SobreNosController::class,'sobrenos'])->name('site.sobre-nos');
+Route::get('/sobre-nos', [\App\Http\Controllers\SobreNosController::class, 'sobrenos'])->name('site.sobre-nos');
 
-Route::get('/contato',[\App\Http\Controllers\ContatoController::class,'contato'])->name('site.contato');
+Route::get('/contato', [\App\Http\Controllers\ContatoController::class, 'contato'])->name('site.contato');
 
-Route::post('/contato',[\App\Http\Controllers\ContatoController::class,'salvar'])->name('site.contato');
+Route::post('/contato', [\App\Http\Controllers\ContatoController::class, 'salvar'])->name('site.contato');
 
-Route::get('/login/{erro?}',[LoginController::class, 'index'])->name('site.login');
-Route::post('/login',[LoginController::class, 'autenticar'])->name('site.login');
+Route::get('/login/{erro?}', [LoginController::class, 'index'])->name('site.login');
+Route::post('/login', [LoginController::class, 'autenticar'])->name('site.login');
 
-// rota produto
-Route::resource('produto', ProdutoController::class);
-// rota produto-detalhe
-Route::resource('produto-detalhe', ProdutoDetalheController::class);
+Route::get('/cliente', [ClienteController::class, 'index'])->name('app.cliente');
 
-Route::middleware('autenticacao:padrao')->prefix('/app')->group(function() {
-  
+Route::get('/produto', [ProdutoController::class, 'index'])->name('app.produto');
+
+
+Route::middleware('autenticacao:padrao')->prefix('/app')->group(function () {
+
     Route::get('/home', [HomeController::class, 'index'])->name('app.home');
     Route::get('/sair', [LoginController::class, 'sair'])->name('app.sair');
-    Route::get('/cliente', [ClienteController::class, 'index'])->name('app.cliente');
 
     Route::get('/fornecedor', [FornecedorController::class, 'index'])->name('app.fornecedor');
     Route::get('/fornecedor/listar', [FornecedorController::class, 'listar'])->name('app.fornecedor.listar');
@@ -61,21 +64,30 @@ Route::middleware('autenticacao:padrao')->prefix('/app')->group(function() {
     Route::get('/fornecedor/adicionar', [FornecedorController::class, 'adicionar'])->name('app.fornecedor.adicionar');
     Route::post('/fornecedor/adicionar', [FornecedorController::class, 'adicionar'])->name('app.fornecedor.adicionar');
     Route::get('/fornecedor/editar/{id}/{msg?}', [FornecedorController::class, 'editar'])->name('app.fornecedor.editar');
-    Route::get('/fornecedor/exclui/{id}',[FornecedorController::class, 'excluir'])->name('app.fornecedor.excluir');
-    
+    Route::get('/fornecedor/exclui/{id}', [FornecedorController::class, 'excluir'])->name('app.fornecedor.excluir');
 
 
-    Route::get('/produto', [ProdutoController::class, 'index'])->name('app.produto');
+
+
+    // rota produto
+    Route::resource('produto', ProdutoController::class);
+    // rota produto-detalhe
+    Route::resource('produto-detalhe', ProdutoDetalheController::class);
+
+    Route::get('/cliente', [ClienteController::class, 'index'])->name('app.cliente');
+
+    Route::resource('cliente', ClienteController::class);
+    Route::resource('pedido', PedidoController::class);
+    Route::resource('pedido_produto', PedidoProdutoController::class);
 });
 
-Route::get('/teste/{p1}/{p2}', [\App\Http\Controllers\TesteController::class,'teste'])->name('site.teste');
+Route::get('/teste/{p1}/{p2}', [\App\Http\Controllers\TesteController::class, 'teste'])->name('site.teste');
 
 
 
 
 // Rota com mensagem padrão, para "substituir" mensagem de erro.
 
-// Route::fallback(function(){
-//     echo 'A página indicada não existe. <a href="'.route('site.principal').'">Clique aqui</a> para voltar a página inicial.';
-// });
-
+Route::fallback(function(){
+    echo 'A página indicada não existe. <a href="'.route('site.principal').'">Clique aqui</a> para voltar a página inicial.';
+});
